@@ -59,4 +59,44 @@ Nous parcourons chaque mot dans `input_words`. Si le mot est déjà dans `word_l
 ```
 Enfin, nous affichons le mot et son nombre d'occurrences.
 
-J'espère que cela clarifie comment le code fonctionne. N'hésitez pas à poser des questions supplémentaires !
+Voici les morceaux de code que j'ai ajoutés pour exporter les résultats dans un fichier CSV, ainsi que des explications pour chaque partie.
+
+### Ajout de la bibliothèque `csv`
+
+```rust
+use csv::Writer;
+```
+
+Ici, nous importons `Writer` depuis la bibliothèque `csv`, ce qui nous permettra de créer et d'écrire dans des fichiers CSV.
+
+### Initialisation du Writer CSV et écriture des en-têtes
+
+```rust
+let mut wtr = Writer::from_path("word_count.csv").expect("Cannot create file");
+wtr.write_record(&["Word", "Count"]).expect("CSV write error");
+```
+
+1. `Writer::from_path("word_count.csv")` crée un nouveau fichier CSV appelé `word_count.csv`.
+2. `expect("Cannot create file")` génère une erreur si le fichier ne peut pas être créé.
+3. `wtr.write_record(&["Word", "Count"])` écrit les en-têtes "Word" et "Count" dans la première ligne du fichier CSV.
+
+### Écriture des données dans le fichier CSV
+
+```rust
+for (_, word) in &word_list {
+    wtr.write_record(&[word.word.as_str(), word.count.to_string().as_str()])
+        .expect("CSV write error");
+}
+```
+
+Dans cette boucle, pour chaque `word` dans `word_list`, nous utilisons `wtr.write_record` pour écrire le mot et son compteur dans le fichier CSV.
+
+### Flush du Writer CSV
+
+```rust
+wtr.flush().expect("CSV write error");
+```
+
+La méthode `flush()` assure que toutes les données en attente sont écrites dans le fichier. Ceci est important pour s'assurer que le fichier CSV est correctement finalisé.
+
+Ces ajouts permettent d'exporter les résultats dans un fichier CSV que vous pouvez ensuite ouvrir avec n'importe quel logiciel qui supporte ce format, comme Microsoft Excel ou LibreOffice Calc.

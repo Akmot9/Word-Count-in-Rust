@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use csv::Writer;
 
 #[derive(Debug)]
 struct Word {
@@ -24,7 +25,14 @@ fn main() {
         }
     }
 
+    let mut wtr = Writer::from_path("word_count.csv").expect("Cannot create file");
+
+    wtr.write_record(&["Word", "Count"]).expect("CSV write error");
+
     for (_, word) in &word_list {
-        println!("Word: {}, Count: {}", word.word, word.count);
+        wtr.write_record(&[word.word.as_str(), word.count.to_string().as_str()])
+            .expect("CSV write error");
     }
+
+    wtr.flush().expect("CSV write error");
 }
